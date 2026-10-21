@@ -5,7 +5,7 @@ Captures a screenshot of a single web page.
 ## Features
 
 - Waits for the page to stop loading before capturing, so a site that redirects through an interstitial is captured after the redirect
-- Reports through the exit status whether the page settled within the time budget
+- Captures a page that does not settle within the time budget as it stands, and says so on standard error
 - Leaves an existing output file alone unless asked to replace it
 - Optional downscaling of the capture
 
@@ -36,9 +36,6 @@ $ pageshot [options] <url>
 |------|---------|
 | 0 | Captured, or skipped because the output already exists |
 | 1 | Failed |
-| 2 | Captured before the page settled |
-
-An exit status of 2 means the image is of a page that was still loading. Capture it again with a larger `-timeout` and `-force`.
 
 ### Example
 

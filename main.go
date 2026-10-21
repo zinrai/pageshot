@@ -9,10 +9,7 @@ import (
 	"time"
 )
 
-const (
-	exitFailure   = 1
-	exitUnsettled = 2
-)
+const exitFailure = 1
 
 func main() {
 	var (
@@ -32,7 +29,6 @@ func main() {
 		fmt.Fprintf(os.Stderr, "\nExit status:\n")
 		fmt.Fprintf(os.Stderr, "  0  captured, or skipped because the output already exists\n")
 		fmt.Fprintf(os.Stderr, "  1  failed\n")
-		fmt.Fprintf(os.Stderr, "  2  captured before the page settled\n")
 	}
 
 	flag.Parse()
@@ -87,7 +83,7 @@ func main() {
 
 	if !settled {
 		fmt.Fprintf(os.Stderr, "Captured: %s before the page settled\n", *output)
-		os.Exit(exitUnsettled)
+		return
 	}
 
 	fmt.Fprintf(os.Stderr, "Captured: %s\n", *output)
