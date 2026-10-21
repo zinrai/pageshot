@@ -8,6 +8,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/chromedp/cdproto/cdp"
 	"github.com/chromedp/cdproto/page"
 	"github.com/chromedp/chromedp"
 	"golang.org/x/image/draw"
@@ -57,18 +58,24 @@ func Capture(url string, opts Options) ([]byte, bool, error) {
 	watcher := watchLifecycle(ctx)
 
 	settled := false
-	var buf []byte
-	err := chromedp.Run(ctx,
+	err := chromedp.Do(ctx,
 		chromedp.EmulateViewport(int64(opts.Viewport.Width), int64(opts.Viewport.Height)),
-		page.SetLifecycleEventsEnabled(true),
+		chromedp.Func(func(ctx context.Context, t *chromedp.Target) error {
+			_, err := cdp.Call(ctx, t, page.SetLifecycleEventsEnabled, page.SetLifecycleEventsEnabledParams{Enabled: true})
+			return err
+		}),
 		chromedp.Navigate(url),
-		chromedp.ActionFunc(func(ctx context.Context) error {
+		chromedp.Func(func(ctx context.Context, t *chromedp.Target) error {
 			deadline, _ := ctx.Deadline()
 			settled = watcher.wait(time.Until(deadline)-captureReserve, opts.Timeout/graceDivisor)
 			return nil
 		}),
-		chromedp.CaptureScreenshot(&buf),
 	)
+	if err != nil {
+		return nil, false, err
+	}
+
+	buf, err := chromedp.Run(ctx, chromedp.CaptureScreenshot())
 	if err != nil {
 		return nil, false, err
 	}
@@ -98,29 +105,34 @@ type lifecycleWatcher struct {
 func watchLifecycle(ctx context.Context) *lifecycleWatcher {
 	w := &lifecycleWatcher{changed: make(chan struct{}, 1)}
 
-	chromedp.ListenTarget(ctx, func(ev interface{}) {
-		e, ok := ev.(*page.EventLifecycleEvent)
-		if !ok {
-			return
+	events := chromedp.Events(ctx, page.LifecycleEvent)
+	go func() {
+		for e, err := range events {
+			if err != nil {
+				return
+			}
+			w.record(e.Name)
 		}
-
-		w.mu.Lock()
-		switch e.Name {
-		case "init":
-			w.idle = false
-		case "networkIdle":
-			w.idle = true
-			w.idleAt = time.Now()
-		}
-		w.mu.Unlock()
-
-		select {
-		case w.changed <- struct{}{}:
-		default:
-		}
-	})
+	}()
 
 	return w
+}
+
+func (w *lifecycleWatcher) record(name string) {
+	w.mu.Lock()
+	switch name {
+	case "init":
+		w.idle = false
+	case "networkIdle":
+		w.idle = true
+		w.idleAt = time.Now()
+	}
+	w.mu.Unlock()
+
+	select {
+	case w.changed <- struct{}{}:
+	default:
+	}
 }
 
 // wait blocks until the page has stayed network idle for grace without
