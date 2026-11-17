@@ -4,5 +4,5 @@ github.com/chromedp/chromedp v0.23.0 h1:iNGzFz+exVgG4OynS2CnYzlAjHiOFW++fUPbbmSw
 github.com/chromedp/chromedp v0.23.0/go.mod h1:hJcPsoPrgxu4ulIXhO1WmtKjosCD8jbZh0+TeVFsod8=
 github.com/go-json-experiment/json v0.0.0-20260623181947-01eb4420fa68 h1:KZaTBSyshWX3MP5jukJcNSuXDQTO+rNpt0J564dX/eg=
 github.com/go-json-experiment/json v0.0.0-20260623181947-01eb4420fa68/go.mod h1:tphK2c80bpPhMOI4v6bIc2xWywPfbqi1Z06+RcrMkDg=
-golang.org/x/image v0.47.0 h1:za/8gVz++PPZqmZJBNSISICN5Rrj5zixP/8K++fgmqo=
-golang.org/x/image v0.47.0/go.mod h1:IkN5o4A7vq55vXN8FWjjnhg9Rs2GOtffqsSi9mWAKYE=
+golang.org/x/image v0.48.0 h1:1AvuPcuoOTJpA7s4VZ5umrb90T3So0rkB/bSGmxkxik=
+golang.org/x/image v0.48.0/go.mod h1:mmtg64iqJKGqEgy+r13dfybl85tmxUd2lMnmaiSdWYY=
