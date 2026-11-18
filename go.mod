@@ -3,7 +3,7 @@ module github.com/zinrai/pageshot
 go 1.26.0
 
 require (
-	github.com/chromedp/cdproto v0.159.2
+	github.com/chromedp/cdproto v0.160.1
 	github.com/chromedp/chromedp v0.23.0
 	golang.org/x/image v0.48.0
 )
